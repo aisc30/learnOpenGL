@@ -17,6 +17,7 @@ public:
     // uniform工具函数
     void setInt(int element_num, const std::string &name, int value, int value2, int value3, int value4);   
     void setFloat(int element_num, const std::string &name, float value, float value2, float value3, float value4);  
+	void setMatrix(int element_num, const std::string &name, float *ptr_tran);
 };
 
 Shader::Shader(const char* vertexShaderSource, const char* fragmentShaderSource)
@@ -93,4 +94,15 @@ void Shader::setFloat(int element_num, const std::string &name, float value, flo
     	glUniform4f(glGetUniformLocation(ProgramID, name.c_str()), value, value2, value3, value4);
     else 
     	glUniform1f(glGetUniformLocation(ProgramID, name.c_str()), value); 
+} 
+void Shader::setMatrix(int element_num, const std::string &name, float *ptr_tran) 
+{ 
+    if(element_num == 2)
+		glUniformMatrix2fv(glGetUniformLocation(ProgramID, name.c_str()), 1, GL_FALSE, ptr_tran);    
+    else if(element_num == 3)
+		glUniformMatrix3fv(glGetUniformLocation(ProgramID, name.c_str()), 1, GL_FALSE, ptr_tran);    
+    else if(element_num == 4)
+		glUniformMatrix4fv(glGetUniformLocation(ProgramID, name.c_str()), 1, GL_FALSE, ptr_tran);           
+    //else 
+	//	glUniformMatrix1fv(glGetUniformLocation(ProgramID, name.c_str()), 1, GL_FALSE, ptr_tran);    
 } 
