@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <CameraClass.h>
 
 using namespace std;
 
@@ -41,10 +42,7 @@ const char* fragmentShaderSource = "\n"
 	"    vec2 UpDownCoord = vec2((ourTexCoord.x-0.5)+0.5, ((1.0 - ourTexCoord.y - 0.5)+0.5));\n"
 	"    FragColor = texture(ourTexture1, UpDownCoord);\n" 
 	"}";
-
-
-
-
+	
 
 int main()
 {
@@ -75,7 +73,8 @@ int main()
 
 
 	Shader object1(vertexShaderSource, fragmentShaderSource);
-
+	// Camera camera(window, 640, 480);
+	camera.Init(window, 640, 480);
 
 	// float vertices[] = {													//一张纹理图像对应0-1的坐标范围，超过的会扩展
 	// // //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
@@ -230,14 +229,14 @@ int main()
                
 		object1.use();
 		object1.setFloat(1,"scale", scale);
+
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        glm::mat4 projection = glm::mat4(1.0f);
-        float screenWidth = 640;
-        float screenHeight = 480;
-        projection = glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
+        
+		camera.update();
+		glm::mat4 view = camera.view;		
+        glm::mat4 projection = camera.projection;
+		
 
 
         object1.setMatrix(4, "model", glm::value_ptr(model)); 
@@ -248,16 +247,16 @@ int main()
 		// glBindVertexArray(0);
 
 
-for(unsigned int i = 0; i < 9; i++)
-{
-  glm::mat4 model = glm::mat4(1.0f);;
-  model = glm::translate(model, cubePositions[i]);
-  float angle = 20.0f * i; 
-  model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-  object1.setMatrix(4, "model", glm::value_ptr(model));
+		for(unsigned int i = 0; i < 9; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);;
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i; 
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			object1.setMatrix(4, "model", glm::value_ptr(model));
 
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-}
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		/* Swap front and back buffers */  
 		glfwSwapBuffers(window);  
